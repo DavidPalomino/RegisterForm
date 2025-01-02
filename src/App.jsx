@@ -1,10 +1,10 @@
 import './App.css'
-
+import {Form} from "./layout/Form/Form"
 function App() {
 
   return (
     <div>
-      <h1>Here we go</h1>
+      <Form/>
     </div>
   )
 }
