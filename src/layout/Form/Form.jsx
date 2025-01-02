@@ -1,11 +1,12 @@
 import { Header } from "../../components/Header/Header";
 import { useState, useRef } from "react";
-
+import { sectionOneValidation } from "./Validation";
 export const Form = () => {
   const [formSection, setFormSection] = useState(0);
   const [formData, setFormData] = useState({
     formSection: formSection,
     document: "",
+    nationality: "",
     documentNumber: "",
     name: "",
     lastname: "",
@@ -22,6 +23,7 @@ export const Form = () => {
 
   const [errors, setErrors] = useState({
     document: "",
+    nationality: "",
     documentNumber: "",
     name: "",
     lastname: "",
@@ -78,11 +80,39 @@ export const Form = () => {
     const { name, value } = e.target;
     if (name === "terms" || name === "pep") {
       const { checked } = e.target;
-      setFormData({ ...formData, [name]: checked });
+      setFormData({ ...formData, [name]: checked })
+      setErrors(sectionOneValidation({...formData, [name]: checked}))
     } else {
       setFormData({ ...formData, [name]: value });
+      
     }
+    if(formSection == 0){ 
+      setErrors(sectionOneValidation({...formData, [name]: value}))
+    }
+  };
 
+  const continueHandler = () => {
+    const hasErrors = Object.values(errors).some((error) => error !== "");
+    if(!hasErrors) {
+      setFormSection(formData.formSection++)
+    }
+  }
+
+  const danger = (prop) => {
+    return errors[prop] ? (
+      <p >{errors[prop]}</p>
+    ) : null;
+  }
+
+  const nationalitySelector = () => {
+    return formData.document == "Carnet" || formData.document == "Pasaporte" ? (
+      <select name="nationality" onChange={changeHandler}>
+        <option value="">Nacionalidad</option>
+        <option value="Peru">Peru</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Chile">Chile</option>
+      </select>
+    ) : null;
   };
 
   return (
@@ -97,19 +127,28 @@ export const Form = () => {
             <option value="Carnet">Carnet de Extranjería</option>
             <option value="Pasaporte">Pasaporte</option>
           </select>
+          {danger("document")}
+          <div>
+          {formData.document == "Carnet" || formData.document == "Pasaporte" ? (<p>Nacionalidad</p>) : null} 
+          {nationalitySelector()}
+          {danger("nationality")}
+          </div>
           <p>Numero de documento</p>
           <input
             type="number"
             name="documentNumber"
             onChange={changeHandler}
             disabled={!formData.document}
+            placeholder="Ingrese su documento"
           />
+          {danger("documentNumber")}
           <p>
             Tengo 18 años de edad o más y he leído y acepto los Términos y
             Condiciones generales así como la Política de privacidad
           </p>
           <input type="checkbox" name="terms" onChange={changeHandler} />
-          <button type="button" onClick={() => setFormSection(1)}>
+          {danger("terms")}
+          <button type="button" onClick={continueHandler} disabled={!formData.terms}>
             Empezar
           </button>
         </div>
