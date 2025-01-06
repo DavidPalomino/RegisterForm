@@ -1,10 +1,9 @@
 import { Header } from "../../components/Header/Header";
 import { useState, useRef } from "react";
-import { sectionOneValidation } from "./Validation";
+import { formValidations } from "./Validation";
 export const Form = () => {
-  const [formSection, setFormSection] = useState(0);
+  const [formSection, setFormSection] = useState(2);
   const [formData, setFormData] = useState({
-    formSection: formSection,
     document: "",
     nationality: "",
     documentNumber: "",
@@ -22,19 +21,27 @@ export const Form = () => {
   });
 
   const [errors, setErrors] = useState({
-    document: "",
-    nationality: "",
-    documentNumber: "",
-    name: "",
-    lastname: "",
-    date: "",
-    department: "",
-    province: "",
-    district: "",
-    addres: "",
-    email: "",
-    terms: "",
-    pep: "",
+    sectionOne: {
+      document: "",
+      documentNumber: "",
+      nationality: "",
+      terms: "",
+    },
+    sectionTwo: {
+      name: "",
+      lastname: "",
+      date: "",
+    },
+    sectionThree: {
+      province: "",
+      district: "",
+      addres: "",
+      email: "",
+      pep: "",
+    },
+    sectionFour: {
+      opt: "",
+    },
   });
 
   const [otp, setOtp] = useState({
@@ -44,6 +51,48 @@ export const Form = () => {
     digit4: "",
   });
   const otpRefs = useRef([]);
+
+  const changeHandler = (e) => {
+    const { name, value } = e.target;
+    if (name === "terms" || name === "pep") {
+      const { checked } = e.target;
+      setFormData({ ...formData, [name]: checked });
+      if (name === "terms") {
+        setErrors(formValidations({ ...formData, [name]: checked }));
+      }
+      if (name === "pep") {
+        setErrors(formValidations({ ...formData, [name]: checked }));
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+    setErrors(formValidations({ ...formData, [name]: value }));
+  };
+
+  const continueHandler = () => {
+    const allSections = Object.values(errors);
+    const hasErrors = Object.values(allSections[formSection]).some(
+      (error) => error !== ""
+    );
+    if (!hasErrors) {
+      setFormSection(formSection + 1);
+    }
+  };
+
+  const danger = (prop) => {
+    return errors[prop] ? <p>{errors[prop]}</p> : null;
+  };
+
+  const nationalitySelector = () => {
+    return formData.document == "Carnet" || formData.document == "Pasaporte" ? (
+      <select name="nationality" onChange={changeHandler}>
+        <option value="">Nacionalidad</option>
+        <option value="Peru">Peru</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Chile">Chile</option>
+      </select>
+    ) : null;
+  };
 
   const handleOtpChange = (e, index) => {
     const { value } = e.target;
@@ -75,46 +124,6 @@ export const Form = () => {
       alert("Por favor, completa el código OTP.");
     }
   };
-
-  const changeHandler = (e) => {
-    const { name, value } = e.target;
-    if (name === "terms" || name === "pep") {
-      const { checked } = e.target;
-      setFormData({ ...formData, [name]: checked })
-      setErrors(sectionOneValidation({...formData, [name]: checked}))
-    } else {
-      setFormData({ ...formData, [name]: value });
-      
-    }
-    if(formSection == 0){ 
-      setErrors(sectionOneValidation({...formData, [name]: value}))
-    }
-  };
-
-  const continueHandler = () => {
-    const hasErrors = Object.values(errors).some((error) => error !== "");
-    if(!hasErrors) {
-      setFormSection(formData.formSection++)
-    }
-  }
-
-  const danger = (prop) => {
-    return errors[prop] ? (
-      <p >{errors[prop]}</p>
-    ) : null;
-  }
-
-  const nationalitySelector = () => {
-    return formData.document == "Carnet" || formData.document == "Pasaporte" ? (
-      <select name="nationality" onChange={changeHandler}>
-        <option value="">Nacionalidad</option>
-        <option value="Peru">Peru</option>
-        <option value="Argentina">Argentina</option>
-        <option value="Chile">Chile</option>
-      </select>
-    ) : null;
-  };
-
   return (
     <form>
       <Header />
@@ -129,9 +138,12 @@ export const Form = () => {
           </select>
           {danger("document")}
           <div>
-          {formData.document == "Carnet" || formData.document == "Pasaporte" ? (<p>Nacionalidad</p>) : null} 
-          {nationalitySelector()}
-          {danger("nationality")}
+            {formData.document == "Carnet" ||
+            formData.document == "Pasaporte" ? (
+              <p>Nacionalidad</p>
+            ) : null}
+            {nationalitySelector()}
+            {danger("nationality")}
           </div>
           <p>Numero de documento</p>
           <input
@@ -148,7 +160,11 @@ export const Form = () => {
           </p>
           <input type="checkbox" name="terms" onChange={changeHandler} />
           {danger("terms")}
-          <button type="button" onClick={continueHandler} disabled={!formData.terms}>
+          <button
+            type="button"
+            onClick={continueHandler}
+            disabled={!formData.terms}
+          >
             Empezar
           </button>
         </div>
@@ -161,7 +177,7 @@ export const Form = () => {
           <input type="text" name="lastname" onChange={changeHandler} />
           <p>Fecha de Nacimiento</p>
           <input type="date" name="date" onChange={changeHandler} />
-          <button type="button" onClick={() => setFormSection(2)}>
+          <button type="button" onClick={continueHandler}>
             Continuar
           </button>
         </div>
@@ -170,7 +186,9 @@ export const Form = () => {
         <div>
           <p>Departamento</p>
           <select name="department" onChange={changeHandler}>
-            <option value="">Selecciona tu departamento</option>
+            <option value="" hidden>
+              Selecciona tu pais
+            </option>
             <option value="Lima">Lima</option>
             <option value="Ayacucho">Ayacucho</option>
             <option value="Cusco">Cusco</option>
@@ -181,7 +199,9 @@ export const Form = () => {
             onChange={changeHandler}
             disabled={!formData.department}
           >
-            <option value="">Selecciona tu provincia</option>
+            <option value="" hidden>
+              Selecciona tu Departamento
+            </option>
             <option value="Lima">Lima</option>
             <option value="Ayacucho">Ayacucho</option>
             <option value="Cusco">Cusco</option>
@@ -192,7 +212,9 @@ export const Form = () => {
             onChange={changeHandler}
             disabled={!formData.province || !formData.department}
           >
-            <option value="">Selecciona tu distrito</option>
+            <option value="" hidden>
+              Selecciona tu Distrito
+            </option>
             <option value="Lima">Lima</option>
             <option value="Ayacucho">Ayacucho</option>
             <option value="Cusco">Cusco</option>
@@ -206,7 +228,7 @@ export const Form = () => {
             políticamente (PEP), ni tengo pariente PEP
           </p>
           <input type="checkbox" name="pep" onChange={changeHandler} />
-          <button type="button" onClick={() => setFormSection(3)}>
+          <button type="button" onClick={continueHandler}>
             Continuar
           </button>
         </div>
