@@ -78,13 +78,14 @@ export const Form = () => {
     }
   };
 
-  const danger = (prop) => {
-    return errors[prop] ? <p>{errors[prop]}</p> : null;
+  const danger = (sec,prop) => {
+    return errors[sec][prop] ? <p className={styles.error}>{errors[sec][prop]}</p> : null;
   };
 
   const nationalitySelector = () => {
     return formData.document == "Carnet" || formData.document == "Pasaporte" ? (
-      <select name="nationality" onChange={changeHandler}>
+      <select name="nationality" onChange={changeHandler} className={styles.input}
+      >
         <option value="">Nacionalidad</option>
         <option value="Peru">Peru</option>
         <option value="Argentina">Argentina</option>
@@ -117,149 +118,214 @@ export const Form = () => {
   };
 
   return (
-    <form>
-      <Header />
-      {formSection === 0 && (
-        <div>
-          <p>Tipo de documento</p>
-          <select name="document" onChange={changeHandler}>
-            <option value="">Elige tu documento</option>
-            <option value="DNI">DNI</option>
-            <option value="Carnet">Carnet de Extranjería</option>
-            <option value="Pasaporte">Pasaporte</option>
-          </select>
-          {danger("document")}
-          <div>
-            {formData.document == "Carnet" ||
-            formData.document == "Pasaporte" ? (
-              <p>Nacionalidad</p>
-            ) : null}
+  <form className={styles.formContainer}>
+    <Header />
+    {formSection === 0 && (
+      <div className={`${styles.formSection} ${styles.sectionOne}`}>
+        <p className={styles.label}>Tipo de documento</p>
+        <select
+          className={styles.input}
+          name="document"
+          onChange={changeHandler}
+        >
+          <option value="">Elige tu documento</option>
+          <option value="DNI">DNI</option>
+          <option value="Carnet">Carnet de Extranjería</option>
+          <option value="Pasaporte">Pasaporte</option>
+        </select>
+        {danger("sectionOne","document")}
+        {formData.document == "Carnet" || formData.document == "Pasaporte" ?  (
+          <>
+            <p className={styles.label}>Nacionalidad</p>
             {nationalitySelector()}
-            {danger("nationality")}
-          </div>
-          <p>Numero de documento</p>
+            {danger("sectionOne","nationality")}
+          </>
+        ) : null }
+        <p className={styles.label}>Número de documento</p>
+        <input
+          className={styles.input}
+          type="number"
+          name="documentNumber"
+          onChange={changeHandler}
+          disabled={!formData.document}
+          placeholder="Ingrese su documento"
+        />
+        {danger("sectionOne","documentNumber")}
+        <div className={styles.checkboxContainer}>
           <input
-            type="number"
-            name="documentNumber"
+            className={styles.checkbox}
+            type="checkbox"
+            name="terms"
             onChange={changeHandler}
-            disabled={!formData.document}
-            placeholder="Ingrese su documento"
           />
-          {danger("documentNumber")}
-          <p>
+          <p className={styles.checkboxLabel}>
             Tengo 18 años de edad o más y he leído y acepto los Términos y
             Condiciones generales así como la Política de privacidad
           </p>
-          <input type="checkbox" name="terms" onChange={changeHandler} />
-          {danger("terms")}
-          <button
-            type="button"
-            onClick={continueHandler}
-            disabled={!formData.terms}
-          >
-            Empezar
-          </button>
         </div>
-      )}
-      {formSection === 1 && (
-        <div>
-          <p>Nombre</p>
-          <input type="text" name="name" onChange={changeHandler} />
-          {danger("name")}
-          <p>Apellidos</p>
-          <input type="text" name="lastname" onChange={changeHandler} />
-          {danger("lastname")}
-          <p>Fecha de Nacimiento</p>
-          <input type="date" name="date" onChange={changeHandler} />
-          {danger("date")}
-          <button type="button" onClick={continueHandler}>
-            Continuar
-          </button>
-        </div>
-      )}
-      {formSection === 2 && (
-        <div>
-          <p>Departamento</p>
-          <select name="department" onChange={changeHandler}>
-            <option value="" hidden>
-              Selecciona tu pais
-            </option>
-            <option value="Lima">Lima</option>
-            <option value="Ayacucho">Ayacucho</option>
-            <option value="Cusco">Cusco</option>
-          </select>
-          <p>Provincia</p>
-          <select
-            name="province"
+        {danger("sectionOne","terms")}
+        <button
+          className={styles.button}
+          type="button"
+          onClick={continueHandler}
+          disabled={!formData.terms}
+        >
+          Empezar
+        </button>
+      </div>
+    )}
+    {formSection === 1 && (
+      <div className={`${styles.formSection} ${styles.sectionTwo}`}>
+        <p className={styles.label}>Nombre</p>
+        <input
+          className={styles.input}
+          type="text"
+          name="name"
+          onChange={changeHandler}
+        />
+        {danger("sectionTwo","name")}
+        <p className={styles.label}>Apellidos</p>
+        <input
+          className={styles.input}
+          type="text"
+          name="lastname"
+          onChange={changeHandler}
+        />
+        {danger("sectionTwo","lastname")}
+        <p className={styles.label}>Fecha de Nacimiento</p>
+        <input
+          className={styles.input}
+          type="date"
+          name="date"
+          onChange={changeHandler}
+        />
+        {danger("sectionTwo","date")}
+        <button
+          className={styles.button}
+          type="button"
+          onClick={continueHandler}
+        >
+          Continuar
+        </button>
+      </div>
+    )}
+    {formSection === 2 && (
+      <div className={`${styles.formSection} ${styles.sectionThree}`}>
+        <p className={styles.label}>Departamento</p>
+        <select
+          className={styles.input}
+          name="department"
+          onChange={changeHandler}
+        >
+          <option value="" hidden>
+            Selecciona tu departamento
+          </option>
+          <option value="Lima">Lima</option>
+          <option value="Ayacucho">Ayacucho</option>
+          <option value="Cusco">Cusco</option>
+        </select>
+        <p className={styles.label}>Provincia</p>
+        <select
+          className={styles.input}
+          name="province"
+          onChange={changeHandler}
+          disabled={!formData.department}
+        >
+          <option value="" hidden>
+            Selecciona tu provincia
+          </option>
+          <option value="Lima">Lima</option>
+          <option value="Ayacucho">Ayacucho</option>
+          <option value="Cusco">Cusco</option>
+        </select>
+        <p className={styles.label}>Distrito</p>
+        <select
+          className={styles.input}
+          name="district"
+          onChange={changeHandler}
+          disabled={!formData.province || !formData.department}
+        >
+          <option value="" hidden>
+            Selecciona tu distrito
+          </option>
+          <option value="Lima">Lima</option>
+          <option value="Ayacucho">Ayacucho</option>
+          <option value="Cusco">Cusco</option>
+        </select>
+        <p className={styles.label}>Dirección</p>
+        <input
+          className={styles.input}
+          type="text"
+          name="addres"
+          onChange={changeHandler}
+        />
+        {danger("sectionThree","addres")}
+        <p className={styles.label}>Correo</p>
+        <input
+          className={styles.input}
+          type="email"
+          name="email"
+          onChange={changeHandler}
+        />
+        {danger("sectionThree","email")}
+        <div className={styles.checkboxContainer}>
+          <input
+            className={styles.checkbox}
+            type="checkbox"
+            name="pep"
             onChange={changeHandler}
-            disabled={!formData.department}
-          >
-            <option value="" hidden>
-              Selecciona tu Departamento
-            </option>
-            <option value="Lima">Lima</option>
-            <option value="Ayacucho">Ayacucho</option>
-            <option value="Cusco">Cusco</option>
-          </select>
-          <p>Distrito</p>
-          <select
-            name="district"
-            onChange={changeHandler}
-            disabled={!formData.province || !formData.department}
-          >
-            <option value="" hidden>
-              Selecciona tu Distrito
-            </option>
-            <option value="Lima">Lima</option>
-            <option value="Ayacucho">Ayacucho</option>
-            <option value="Cusco">Cusco</option>
-          </select>
-          <p>Dirección</p>
-          <input type="text" name="addres" onChange={changeHandler} />
-          {danger("addres")}
-          <p>Correo</p>
-          <input type="email" name="email" onChange={changeHandler} />
-          {danger("email")}
-
-          <p>
+          />
+          <p className={styles.checkboxLabel}>
             Afirmo y ratifico que no he sido o soy una persona expuesta
             políticamente (PEP), ni tengo pariente PEP
           </p>
-          <input type="checkbox" name="pep" onChange={changeHandler} />
-          {danger("pep")}
-          <button type="button" onClick={continueHandler}>
-            Continuar
-          </button>
         </div>
-      )}
-      {formSection === 3 && (
-        <div>
-          <h1>Ingresa el código que te mandamos al celular</h1>
-          <div>
-            {[0, 1, 2, 3].map((index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength="1"
-                name={`digit${index + 1}`}
-                value={otp[`digit${index + 1}`]}
-                onChange={(e) => handleOtpChange(e, index)}
-                onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                ref={(el) => (otpRefs.current[index] = el)}
-              />
-            ))}
-          </div>
-          {danger("opt")}
-          <button type="button" onClick={continueHandler}>
-            Continuar
-          </button>
+        {danger("sectionThree","pep")}
+        <button
+          className={styles.button}
+          type="button"
+          onClick={continueHandler}
+        >
+          Continuar
+        </button>
+      </div>
+    )}
+    {formSection === 3 && (
+      <div className={`${styles.formSection} ${styles.sectionFour}`}>
+        <h1 className={styles.title}>
+          Ingresa el código que te mandamos al celular
+        </h1>
+        <div className={styles.otpContainer}>
+          {[0, 1, 2, 3].map((index) => (
+            <input
+              key={index}
+              className={styles.otpInput}
+              type="text"
+              maxLength="1"
+              name={`digit${index + 1}`}
+              value={otp[`digit${index + 1}`]}
+              onChange={(e) => handleOtpChange(e, index)}
+              onKeyDown={(e) => handleOtpKeyDown(e, index)}
+              ref={(el) => (otpRefs.current[index] = el)}
+            />
+          ))}
         </div>
-      )}
-      {formSection === 4 && (
-        <div>
-          <h1>Felicidades</h1>
-        </div>
-      )}
-    </form>
-  );
+        {danger("sectionFour","opt")}
+        <button
+          className={styles.button}
+          type="button"
+          onClick={continueHandler}
+        >
+          Continuar
+        </button>
+      </div>
+    )}
+    {formSection === 4 && (
+      <div className={`${styles.formSection} ${styles.sectionFive}`}>
+        <h1 className={styles.title}>Felicidades</h1>
+        <p>Tu registro se ha completado exitosamente.</p>
+      </div>
+    )}
+  </form>
+);
 };

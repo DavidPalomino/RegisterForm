@@ -3,7 +3,7 @@ import {Form} from "./layout/Form/Form"
 function App() {
 
   return (
-    <div>
+    <div className='form'>
       <Form/>
     </div>
   )
