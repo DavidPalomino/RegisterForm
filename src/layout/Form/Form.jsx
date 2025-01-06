@@ -1,8 +1,9 @@
 import { Header } from "../../components/Header/Header";
 import { useState, useRef } from "react";
 import { formValidations } from "./Validation";
+import styles from "./Form.module.css"
 export const Form = () => {
-  const [formSection, setFormSection] = useState(2);
+  const [formSection, setFormSection] = useState(0);
   const [formData, setFormData] = useState({
     document: "",
     nationality: "",
@@ -33,8 +34,6 @@ export const Form = () => {
       date: "",
     },
     sectionThree: {
-      province: "",
-      district: "",
       addres: "",
       email: "",
       pep: "",
@@ -107,6 +106,8 @@ export const Form = () => {
 
     const fullCode = Object.values(newOtp).join("");
     setFormData({ ...formData, code: fullCode });
+    setErrors(formValidations({ ...formData, code: fullCode }));
+
   };
 
   const handleOtpKeyDown = (e, index) => {
@@ -115,15 +116,6 @@ export const Form = () => {
     }
   };
 
-  const handleOtpSubmit = () => {
-    const fullCode = Object.values(otp).join("");
-    if (fullCode.length === 4) {
-      console.log("OTP enviado:", fullCode);
-      setFormSection(4);
-    } else {
-      alert("Por favor, completa el código OTP.");
-    }
-  };
   return (
     <form>
       <Header />
@@ -173,10 +165,13 @@ export const Form = () => {
         <div>
           <p>Nombre</p>
           <input type="text" name="name" onChange={changeHandler} />
+          {danger("name")}
           <p>Apellidos</p>
           <input type="text" name="lastname" onChange={changeHandler} />
+          {danger("lastname")}
           <p>Fecha de Nacimiento</p>
           <input type="date" name="date" onChange={changeHandler} />
+          {danger("date")}
           <button type="button" onClick={continueHandler}>
             Continuar
           </button>
@@ -221,13 +216,17 @@ export const Form = () => {
           </select>
           <p>Dirección</p>
           <input type="text" name="addres" onChange={changeHandler} />
+          {danger("addres")}
           <p>Correo</p>
           <input type="email" name="email" onChange={changeHandler} />
+          {danger("email")}
+
           <p>
             Afirmo y ratifico que no he sido o soy una persona expuesta
             políticamente (PEP), ni tengo pariente PEP
           </p>
           <input type="checkbox" name="pep" onChange={changeHandler} />
+          {danger("pep")}
           <button type="button" onClick={continueHandler}>
             Continuar
           </button>
@@ -250,7 +249,8 @@ export const Form = () => {
               />
             ))}
           </div>
-          <button type="button" onClick={handleOtpSubmit}>
+          {danger("opt")}
+          <button type="button" onClick={continueHandler}>
             Continuar
           </button>
         </div>

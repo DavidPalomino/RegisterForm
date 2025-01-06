@@ -29,8 +29,6 @@ export const formValidations = (formData) => {
       date: "",
     },
     sectionThree: {
-      province: "",
-      district: "",
       addres: "",
       email: "",
       pep: "",
@@ -100,7 +98,7 @@ export const formValidations = (formData) => {
     errors.sectionThree.pep = "Acepta el pep";
   }
 
-  if(formData.code !== optCode){
+  if(formData.code != optCode){
     errors.sectionFour.opt = "Codigo incorrecto"
   }
 
