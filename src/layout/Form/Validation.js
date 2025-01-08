@@ -1,5 +1,7 @@
 const today = new Date().getFullYear();
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+ const noNumberRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/
+ 
 const optCode = "1234";
 const adult = (d) => {
   let userYearStr = "";
@@ -73,12 +75,12 @@ export const formValidations = (formData) => {
       "Acepta los terminos y condiciones para continuar";
   }
 
-  if (!empty(formData.name)) {
-    errors.sectionTwo.name = "Ingresa tu nombre";
+  if (!empty(formData.name) || !noNumberRegex.test(formData.name)) {
+    errors.sectionTwo.name = "El nombre no debe estar vacio ni contener numeros o simbolos";
   }
 
-  if (!empty(formData.lastname)) {
-    errors.sectionTwo.lastname = "Ingresa tu apellido";
+  if (!empty(formData.lastname) || !noNumberRegex.test(formData.lastname)) {
+    errors.sectionTwo.lastname = "El apellido no debe estar vacio ni contener numeros o simbolos";
   }
 
   if (!adult(formData.date)) {
